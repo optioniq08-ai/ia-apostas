@@ -1,32 +1,60 @@
 <!DOCTYPE html>
 
 <html>
+<head>
+  <title>IA Apostas PRO</title>
+  <style>
+    body { font-family: Arial; background:#111; color:#fff; }
+    .card { border:1px solid #333; margin:10px; padding:10px; border-radius:8px; }
+    .green { color:#00ff88; }
+    .red { color:#ff4d4d; }
+    button { padding:10px; background:#00ff88; border:none; cursor:pointer; }
+  </style>
+</head>
 <body>
 
 <h1>IA Apostas PRO</h1>
 
-<button onclick="rodar()">Analisar Jogos</button>
+<button onclick="buscarJogos()">Buscar Jogos Reais</button>
 
 <div id="resultado"></div>
 
 <script>
-function rodar() {
+async function buscarJogos() {
+
+  const apiKey = "ff37acdec5475faf1251028fb7487dc6";
+
+  const res = await fetch("https://v3.football.api-sports.io/fixtures?next=10", {
+    method: "GET",
+    headers: {
+      "x-apisports-key": apiKey
+    }
+  });
+
+  const data = await res.json();
+
   let html = "";
 
-  for (let i = 0; i < 5; i++) {
+  data.response.forEach(jogo => {
+
+    let casa = jogo.teams.home.name;
+    let fora = jogo.teams.away.name;
+
     let prob = Math.random();
     let odd = (Math.random() * 2 + 1).toFixed(2);
     let ev = prob - (1/odd);
 
+    let cor = ev > 0 ? "green" : "red";
+
     html += `
-      <div style="border:1px solid black; margin:10px; padding:10px;">
-        Jogo ${i+1}<br>
-        Prob: ${(prob*100).toFixed(1)}%<br>
+      <div class="card">
+        <b>${casa} vs ${fora}</b><br>
+        Prob IA: ${(prob*100).toFixed(1)}%<br>
         Odd: ${odd}<br>
-        EV: ${ev.toFixed(3)}
+        EV: <span class="${cor}">${ev.toFixed(3)}</span>
       </div>
     `;
-  }
+  });
 
   document.getElementById("resultado").innerHTML = html;
 }
