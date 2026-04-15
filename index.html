@@ -1,64 +1,47 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="pt-BR">
 <head>
-  <title>IA Apostas PRO</title>
-  <style>
-    body { font-family: Arial; background:#111; color:#fff; }
-    .card { border:1px solid #333; margin:10px; padding:10px; border-radius:8px; }
-    .green { color:#00ff88; }
-    .red { color:#ff4d4d; }
-    button { padding:10px; background:#00ff88; border:none; cursor:pointer; }
-  </style>
+  <meta charset="UTF-8">
+  <title>IA Apostas Pro</title>
 </head>
-<body>
 
-<h1>IA Apostas PRO</h1>
+<body style="font-family: Arial; text-align:center; margin-top:50px;">
 
-<button onclick="buscarJogos()">Buscar Jogos Reais</button>
+  <h1>IA APOSTAS PROFISSIONAL</h1>
 
-<div id="resultado"></div>
+  <button onclick="buscarJogos()" style="padding:15px; font-size:18px;">
+    BUSCAR JOGOS REAIS
+  </button>
 
-<script>
-async function buscarJogos() {
+  <div id="resultado" style="margin-top:30px;"></div>
 
-  const apiKey = "ff37acdec5475faf1251028fb7487dc6";
+  <script>
+    async function buscarJogos() {
 
-  const res = await fetch("https://v3.football.api-sports.io/fixtures?next=10", {
-    method: "GET",
-    headers: {
-      "x-apisports-key": apiKey
+      const apiKey = "ff37acdec5475faf1251028fb7487dc6";
+
+      const resposta = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
+        method: "GET",
+        headers: {
+          "x-apisports-key": apiKey
+        }
+      });
+
+      const dados = await resposta.json();
+
+      let html = "<h2>Jogos ao Vivo:</h2>";
+
+      dados.response.forEach(jogo => {
+        html += `
+          <p>
+            ${jogo.teams.home.name} ${jogo.goals.home} x ${jogo.goals.away} ${jogo.teams.away.name}
+          </p>
+        `;
+      });
+
+      document.getElementById("resultado").innerHTML = html;
     }
-  });
-
-  const data = await res.json();
-
-  let html = "";
-
-  data.response.forEach(jogo => {
-
-    let casa = jogo.teams.home.name;
-    let fora = jogo.teams.away.name;
-
-    let prob = Math.random();
-    let odd = (Math.random() * 2 + 1).toFixed(2);
-    let ev = prob - (1/odd);
-
-    let cor = ev > 0 ? "green" : "red";
-
-    html += `
-      <div class="card">
-        <b>${casa} vs ${fora}</b><br>
-        Prob IA: ${(prob*100).toFixed(1)}%<br>
-        Odd: ${odd}<br>
-        EV: <span class="${cor}">${ev.toFixed(3)}</span>
-      </div>
-    `;
-  });
-
-  document.getElementById("resultado").innerHTML = html;
-}
-</script>
+  </script>
 
 </body>
 </html>
